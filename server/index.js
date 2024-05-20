@@ -20,11 +20,3 @@ app
   .on("error", (err) => {
     console.error("Error:", err.message);
   });
-
-// Routes
-
-const sayHello = (req, res) => {
-  res.send("Welcome to Wild Series !");
-};
-
-app.get("/", sayHello);
