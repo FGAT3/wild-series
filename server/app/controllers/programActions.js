@@ -1,3 +1,5 @@
+const tables = require("../../database/tables");
+
 // Some data to make the trick
 
 const programs = [
@@ -25,17 +27,24 @@ const programs = [
 
 // Declare the actions
 
-const browse = (req, res) => {
-  if (req.query.q != null) {
-    const filteredPrograms = programs.filter((program) =>
-      program.synopsis.includes(req.query.q)
-    );
-
-    res.json(filteredPrograms);
-  } else {
-    res.json(programs);
-  }
-};
+const browse = async (req, res) => {
+    try {
+      const programsFromDB = await tables.program.readAll();
+  
+      if (req.query.q != null) {
+        const filteredPrograms = programsFromDB.filter((program) =>
+          program.synopsis.includes(req.query.q)
+        );
+  
+        res.json(filteredPrograms);
+      } else {
+        res.json(programsFromDB);
+      }
+    } catch (error) {
+      console.error("Error fetching programs: ", error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };  
 
 const read = (req, res) => {
   const parsedId = parseInt(req.params.id, 10);

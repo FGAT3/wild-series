@@ -1,3 +1,5 @@
+const tables = require("../../database/tables");
+
 // Some data to make the trick
 
 const categories = [
@@ -19,17 +21,24 @@ const normalizeString = (str) =>
 
 // Declare the actions
 
-const browse = (req, res) => {
-  if (req.query.q != null) {
-    const searchQuery = normalizeString(req.query.q);
+const browse = async (req, res) => {
+  try {
+    const categoriesFromDB = await tables.category.readAll();
 
-    const filteredCategories = categories.filter((category) =>
-      normalizeString(category.name).includes(searchQuery)
-    );
+    if (req.query.q != null) {
+      const searchQuery = normalizeString(req.query.q);
 
-    res.json(filteredCategories);
-  } else {
-    res.json(categories);
+      const filteredCategories = categoriesFromDB.filter((category) =>
+        normalizeString(category.name).includes(searchQuery)
+      );
+
+      res.json(filteredCategories);
+    } else {
+      res.json(categoriesFromDB);
+    }
+  } catch (error) {
+    console.error("Error fetching categories: ", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
