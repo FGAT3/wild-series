@@ -41,7 +41,7 @@ const browse = async (req, res) => {
         res.json(programsFromDB);
       }
     } catch (error) {
-      console.error("Error fetching programs: ", error);
+      console.error("Error getting programs: ", error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   };  

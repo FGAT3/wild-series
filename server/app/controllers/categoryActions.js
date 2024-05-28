@@ -37,7 +37,7 @@ const browse = async (req, res) => {
       res.json(categoriesFromDB);
     }
   } catch (error) {
-    console.error("Error fetching categories: ", error);
+    console.error("Error getting categories: ", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
