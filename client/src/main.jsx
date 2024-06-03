@@ -11,7 +11,15 @@ import App from "./App";
 import Categories from "./pages/Categories";
 import CategoryDetails from "./pages/CategoryDetails";
 import CategoryEdit from "./pages/CategoryEdit";
-// import useFetch from "./hooks/useFetch";
+
+const fetchJSON = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`Network response was not ok ${response.statusText}`);
+  }
+  const text = await response.text();
+  return text ? JSON.parse(text) : {}; // Gérer les réponses vides comme delete
+};
 
 const router = createBrowserRouter([
   {
@@ -22,45 +30,20 @@ const router = createBrowserRouter([
         path: "/categories",
         element: <Categories />,
         loader: async () => {
-          const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/categories`,
-            {
-              method: "GET", // GET est la méthode par défaut donc facultatif
-              headers: {
-                "Content-Type": "application/json", // Facultatif pour une requête GET
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-
-          const data = await response.json();
-          return data;
+          const url = `${import.meta.env.VITE_API_URL}/api/categories`;
+          return fetchJSON(url);
         },
         action: async ({ request }) => {
           const formData = await request.formData();
-
           const name = formData.get("name");
+          const url = `${import.meta.env.VITE_API_URL}/api/categories`;
+          
+          const responseData = await fetchJSON(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name }),
+          });
 
-          const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/api/categories`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ name }),
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error(
-              `Network response was not ok ${response.statusText}`
-            );
-          }
-          const responseData = await response.json();
           return redirect(`/categories/${responseData.insertId}`);
         },
       },
@@ -68,67 +51,36 @@ const router = createBrowserRouter([
         path: "/categories/:id",
         element: <CategoryDetails />,
         loader: async ({ params }) => {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`);
-
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-
-          const data = await response.json();
-          return data;
+          const url = `${import.meta.env.VITE_API_URL}/api/categories/${params.id}`;
+          return fetchJSON(url);
         },
       },
       {
         path: "/categories/:id/edit",
         element: <CategoryEdit />,
         loader: async ({ params }) => {
-          try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`);
-      
-            if (!response.ok) {
-              throw new Error(`Network response was not ok ${response.statusText}`);
-            }
-      
-            const categoryData = await response.json();
-            return categoryData;
-          } catch (error) {
-            console.error("Error loading category details:", error);
-            throw new Response("", { status: 500 });
-          }
+            const url = `${import.meta.env.VITE_API_URL}/api/categories/${params.id}`;
+            return fetchJSON(url);
         },
         action: async ({ request, params }) => {
           const formData = await request.formData();
+          const url = `${import.meta.env.VITE_API_URL}/api/categories/${params.id}`;
 
           switch (request.method.toLowerCase()) {
             case "put": {
-
-              const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`, {
+              await fetchJSON(url, {
                 method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: formData.get("name") }),
               });
-            
-              if (!response.ok) {
-                throw new Error(`Network response was not ok ${response.statusText}`);
-              }
-
               return redirect(`/categories/${params.id}`);
             }
             case "delete": {
-              const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`, {
+              await fetchJSON(url, {
                 method: "DELETE",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(),
               });
-            
-              if (!response.ok) {
-                throw new Error(`Network response was not ok ${response.statusText}`);
-              }
-
               return redirect("/categories");
             }
             default:
