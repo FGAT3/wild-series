@@ -56,3 +56,9 @@ main {
   color: #777;
   font-size: 14px;
 }
+
+.error-img {
+  width: 200px;
+  display: block;
+  margin: auto;
+}

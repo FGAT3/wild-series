@@ -77,17 +77,19 @@ const edit = async (req, res, next) => {
 
 // The A of BREAD - Add (Create) operation
 const add = async (req, res, next) => {
-  // Extract the program data from the request body
-  const program = req.body;
+  const { title, synopsis, poster, country, year } = req.body;
 
   try {
-    // Insert the program into the database
-    const insertId = await tables.program.create(program);
+    const insertId = await tables.program.create({
+      title,
+      synopsis,
+      poster,
+      country,
+      year,
+    });
 
-    // Respond with HTTP 201 (Created) and the ID of the newly inserted program
     res.status(201).json({ insertId });
   } catch (err) {
-    // Pass any errors to the error-handling middleware
     next(err);
   }
 };

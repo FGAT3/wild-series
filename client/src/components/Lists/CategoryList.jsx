@@ -1,15 +1,13 @@
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import CustomList from "./CustomList";
 
 function CategoryList({ categories }) {
   return (
-    <ul>
-      {categories.map((category) => (
-        <li key={category.id}>
-          <Link to={`/categories/${category.id}`}>{category.name}</Link>
-        </li>
-      ))}
-    </ul>
+    <CustomList
+      itemList={categories}
+      listName="categories"
+      itemNameKey="name"
+    />
   );
 }
 

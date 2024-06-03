@@ -1,7 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-
-import CategoryList from "../components/CategoryList";
-import CategoryForm from "../components/CategoryForm";
+import CategoryList from "../components/Lists/CategoryList";
+import CategoryForm from "../components/Forms/CategoryForm";
 
 function Categories() {
   const categories = useLoaderData();

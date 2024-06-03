@@ -1,6 +1,6 @@
 import { Link, useLoaderData } from "react-router-dom";
 
-import ProgramList from "../components/ProgramList";
+import ProgramList from "../components/Lists/ProgramList";
 
 function CategoryDetails() {
   const category = useLoaderData();

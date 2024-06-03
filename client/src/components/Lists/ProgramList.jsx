@@ -1,12 +1,9 @@
 import PropTypes from "prop-types";
+import CustomList from "./CustomList";
 
-function ProgramList({ programs }) {
+function ProgramList({ programs = [] }) {
   return (
-    <ul>
-      {programs.map((program) => (
-        <li key={program.id}>{program.title}</li>
-      ))}
-    </ul>
+    <CustomList itemList={programs} listName="programs" itemNameKey="title" />
   );
 }
 
@@ -16,7 +13,12 @@ ProgramList.propTypes = {
       id: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
     })
-  ).isRequired,
+  ),
+};
+
+// répétition car ESLint et console
+ProgramList.defaultProps = {
+  programs: [],
 };
 
 export default ProgramList;
