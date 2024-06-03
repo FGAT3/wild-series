@@ -2,7 +2,6 @@ import { Form, useLoaderData } from "react-router-dom";
 
 function CategoryEdit() {
   const loaderData = useLoaderData();
-
   return (
     <>
       <Form method="put">

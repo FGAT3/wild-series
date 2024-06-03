@@ -10,7 +10,7 @@ import {
 import App from "./App";
 import Categories from "./pages/Categories";
 import CategoryDetails from "./pages/CategoryDetails";
-// import CategoryEdit from "./pages/CategoryEdit";
+import CategoryEdit from "./pages/CategoryEdit";
 // import useFetch from "./hooks/useFetch";
 
 const router = createBrowserRouter([
@@ -76,6 +76,64 @@ const router = createBrowserRouter([
 
           const data = await response.json();
           return data;
+        },
+      },
+      {
+        path: "/categories/:id/edit",
+        element: <CategoryEdit />,
+        loader: async ({ params }) => {
+          try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`);
+      
+            if (!response.ok) {
+              throw new Error(`Network response was not ok ${response.statusText}`);
+            }
+      
+            const categoryData = await response.json();
+            return categoryData;
+          } catch (error) {
+            console.error("Error loading category details:", error);
+            throw new Response("", { status: 500 });
+          }
+        },
+        action: async ({ request, params }) => {
+          const formData = await request.formData();
+
+          switch (request.method.toLowerCase()) {
+            case "put": {
+
+              const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name: formData.get("name") }),
+              });
+            
+              if (!response.ok) {
+                throw new Error(`Network response was not ok ${response.statusText}`);
+              }
+
+              return redirect(`/categories/${params.id}`);
+            }
+            case "delete": {
+              const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${params.id}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(),
+              });
+            
+              if (!response.ok) {
+                throw new Error(`Network response was not ok ${response.statusText}`);
+              }
+
+              return redirect("/categories");
+            }
+            default:
+              throw new Response("", { status: 405 });
+          }
         },
       },
     ],
