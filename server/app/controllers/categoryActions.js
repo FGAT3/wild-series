@@ -2,16 +2,16 @@ const tables = require("../../database/tables");
 
 // Some data to make the trick
 
-const categories = [
-  {
-    id: 1,
-    name: "Science-Fiction",
-  },
-  {
-    id: 2,
-    name: "Comédie",
-  },
-];
+// const categories = [
+//   {
+//     id: 1,
+//     name: "Science-Fiction",
+//   },
+//   {
+//     id: 2,
+//     name: "Comédie",
+//   },
+// ];
 
 const normalizeString = (str) =>
   str
@@ -42,11 +42,10 @@ const browse = async (req, res) => {
   }
 };
 
-const read = (req, res) => {
+const read = async (req, res) => {
   const parsedId = parseInt(req.params.id, 10);
 
-  const category = categories.find((p) => p.id === parsedId);
-
+  const category = await tables.category.read(parsedId);
   if (category != null) {
     res.json(category);
   } else {
@@ -54,6 +53,59 @@ const read = (req, res) => {
   }
 };
 
-// Export them to import them somewhere else
+// The E of BREAD - Edit (Update) operation
+const edit = async (req, res, next) => {
+  // Extract the category data from the request body and params
+  const category = { ...req.body, id: req.params.id };
 
-module.exports = { browse, read };
+  try {
+    // Update the category in the database
+    await tables.category.update(category);
+
+    // Respond with HTTP 204 (No Content)
+    res.sendStatus(204);
+  } catch (err) {
+    // Pass any errors to the error-handling middleware
+    next(err);
+  }
+};
+
+// The A of BREAD - Add (Create) operation
+const add = async (req, res, next) => {
+  // Extract the category data from the request body
+  const category = req.body;
+
+  try {
+    // Insert the category into the database
+    const insertId = await tables.category.create(category);
+
+    // Respond with HTTP 201 (Created) and the ID of the newly inserted category
+    res.status(201).json({ insertId });
+  } catch (err) {
+    // Pass any errors to the error-handling middleware
+    next(err);
+  }
+};
+
+// The D of BREAD - Destroy (Delete) operation
+const destroy = async (req, res, next) => {
+  try {
+    // Delete the category from the database
+    await tables.category.delete(req.params.id);
+
+    // Respond with HTTP 204 (No Content)
+    res.sendStatus(204);
+  } catch (err) {
+    // Pass any errors to the error-handling middleware
+    next(err);
+  }
+};
+
+// Ready to export the controller functions
+module.exports = {
+  browse,
+  read,
+  edit,
+  add,
+  destroy,
+};
