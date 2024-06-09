@@ -16,13 +16,20 @@ class ProgramRepository extends AbstractRepository {
   }
 
   async create(program) {
-    // Execute the SQL INSERT query to add a new program to the "program" table
 
-    const [result] = await this.database.query(
-      `insert into ${this.table} (title) values (?)`,
-
-      [program.title]
-    );
+      // Execute the SQL INSERT query to add a new program to the "program" table
+      const [result] = await this.database.query(
+        `INSERT INTO ${this.table} (title, synopsis, category_id, poster, country, year)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          program.title,
+          program.synopsis,
+          program.category,
+          program.poster,
+          program.country,
+          program.year
+        ]
+      );
 
     // Return the ID of the newly inserted program
 

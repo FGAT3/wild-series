@@ -14,7 +14,7 @@ import CategoryEdit from "./pages/CategoryEdit";
 import Programs from "./pages/Programs";
 import NotFoundPage from "./pages/NotFoundPage";
 
-import fetchJSON from "./httpRequests";
+import fetchJSON from "./services/httpRequests";
 
 const router = createBrowserRouter([
   {
@@ -88,26 +88,48 @@ const router = createBrowserRouter([
         path: "/programs",
         element: <Programs />,
         loader: async () => {
-          const url = `${import.meta.env.VITE_API_URL}/api/programs`;
-          return fetchJSON(url);
+          const categories = await fetchJSON(
+            `${import.meta.env.VITE_API_URL}/api/categories`
+          );
+          const programs = await fetchJSON(
+            `${import.meta.env.VITE_API_URL}/api/programs`
+          );
+          return { categories, programs };
         },
         action: async ({ request }) => {
-          const formData = await request.formData();
-          const title = formData.get("title");
-          const synopsis = formData.get("synopsis");
-          const poster = formData.get("poster");
-          const country = formData.get("country");
-          const year = formData.get("year");
+          try {
+            const formData = await request.formData();
+            const data = Object.fromEntries(formData.entries());
 
-          const url = `${import.meta.env.VITE_API_URL}/api/programs`;
+            const { title, category, synopsis, poster, country, year } = data;
 
-          const responseData = await fetchJSON(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, synopsis, poster, country, year }),
-          });
+            if (
+              !title ||
+              !category ||
+              !synopsis ||
+              !poster ||
+              !country ||
+              !year
+            ) {
+              throw new Error("All fields are required");
+            }
 
-          return redirect(`/programs/${responseData.insertId}`);
+            const url = `${import.meta.env.VITE_API_URL}/api/programs`;
+
+            const responseData = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+
+            if (responseData.insertId) {
+              return redirect(`/programs/${responseData.insertId}`);
+            }
+            throw new Error("Invalid response from server");
+          } catch (error) {
+            console.error("Error submitting form:", error);
+            return { error: error.message };
+          }
         },
       },
     ],

@@ -77,16 +77,9 @@ const edit = async (req, res, next) => {
 
 // The A of BREAD - Add (Create) operation
 const add = async (req, res, next) => {
-  const { title, synopsis, poster, country, year } = req.body;
-
+  const program = req.body;
   try {
-    const insertId = await tables.program.create({
-      title,
-      synopsis,
-      poster,
-      country,
-      year,
-    });
+    const insertId = await tables.program.create(program);
 
     res.status(201).json({ insertId });
   } catch (err) {

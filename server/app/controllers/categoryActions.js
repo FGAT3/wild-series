@@ -74,7 +74,6 @@ const edit = async (req, res, next) => {
 const add = async (req, res, next) => {
   // Extract the category data from the request body
   const category = req.body;
-
   try {
     // Insert the category into the database
     const insertId = await tables.category.create(category);

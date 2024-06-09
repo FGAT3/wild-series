@@ -3,11 +3,11 @@ import ProgramForm from "../components/Forms/ProgramForm";
 import ProgramList from "../components/Lists/ProgramList";
 
 function Programs() {
-  const programs = useLoaderData();
+  const { programs, categories } = useLoaderData();
   return (
     <>
       <h1>Programmes</h1>
-      <ProgramForm />
+      <ProgramForm categories={categories} />
       <ProgramList programs={programs} />
     </>
   );

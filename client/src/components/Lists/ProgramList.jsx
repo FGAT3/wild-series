@@ -16,7 +16,7 @@ ProgramList.propTypes = {
   ),
 };
 
-// répétition car ESLint et console
+// ESLint warning but it add a new warning in console while I already added a default value...
 ProgramList.defaultProps = {
   programs: [],
 };
