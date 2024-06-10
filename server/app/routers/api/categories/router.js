@@ -15,6 +15,8 @@ const {
   destroy,
 } = require("../../../controllers/categoryActions");
 
+const validateCategory = require("../../../services/validateCategory");
+
 // Route to get a list of categories
 router.get("/", browse);
 
@@ -22,10 +24,10 @@ router.get("/", browse);
 router.get("/:id", read);
 
 // Route to edit an existing category
-router.put("/:id", edit);
+router.put("/:id", validateCategory, edit);
 
 // Route to add a new category
-router.post("/", add);
+router.post("/", validateCategory, add);
 
 // Route to edit an existing category
 router.delete("/:id", destroy);
