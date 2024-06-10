@@ -65,6 +65,17 @@ class ProgramRepository extends AbstractRepository {
 
     return result.insertId;
   }
+
+  async delete(id) {
+    // Execute the SQL DELETE query to delete a specific program
+    const [result] = await this.database.query(
+      `delete from ${this.table} where id = ?`,
+      [id]
+    );
+
+    // Return how many rows were affected
+    return result.affectedRows;
+  }
 }
 
 module.exports = ProgramRepository;
