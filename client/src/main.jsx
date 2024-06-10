@@ -156,28 +156,25 @@ const router = createBrowserRouter([
           const formData = await request.formData();
           const data = Object.fromEntries(formData.entries());
 
-          switch (request.method.toUpperCase()) {
-            case "PUT": {
-              await sendData(
-                `${baseProgramsUrl}/${params.id}`,
-                data,
-                request.method.toUpperCase()
-              );
+          const method = request.method.toUpperCase(); // Capitaliser une fois
 
-              return redirect(`/`);
+          const handleMethod = async (httpMethod) => {
+            switch (httpMethod) {
+              case "PUT":
+              case "DELETE":
+                await sendData(
+                  `${baseProgramsUrl}/${params.id}`,
+                  data,
+                  httpMethod
+                );
+                window.location.href = "/programs"; // Redirection en utilisant window.location
+                break;
+              default:
+                throw new Response("", { status: 405 });
             }
+          };
 
-            case "DELETE": {
-              await sendData(
-                `${baseProgramsUrl}/${params.id}`,
-                data,
-                request.method.toUpperCase()
-              );
-              return redirect(`/`);
-            }
-            default:
-              throw new Response("", { status: 405 });
-          }
+          await handleMethod(method);
         },
       },
     ],
