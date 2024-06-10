@@ -15,6 +15,12 @@ import Programs from "./pages/Programs";
 import NotFoundPage from "./pages/NotFoundPage";
 
 import fetchJSON from "./services/httpRequests";
+import ProgramDetails from "./pages/ProgramDetails";
+import { fetchApi, sendData } from "./services/api.service";
+import ProgramEdit from "./pages/ProgramEdit";
+
+const baseCategoriesUrl = "/api/categories";
+const baseProgramsUrl = "/api/programs";
 
 const router = createBrowserRouter([
   {
@@ -96,7 +102,7 @@ const router = createBrowserRouter([
           );
           return { categories, programs };
         },
-        action: async ({ request }) => {
+        action: async ({ request, params }) => {
           try {
             const formData = await request.formData();
             const data = Object.fromEntries(formData.entries());
@@ -123,12 +129,54 @@ const router = createBrowserRouter([
             });
 
             if (responseData.insertId) {
-              return redirect(`/programs/${responseData.insertId}`);
+              return redirect(`/programs/${params.id}`);
             }
             throw new Error("Invalid response from server");
           } catch (error) {
             console.error("Error submitting form:", error);
             return { error: error.message };
+          }
+        },
+      },
+      {
+        path: "/programs/:id",
+        element: <ProgramDetails />,
+        loader: async ({ params }) =>
+          fetchApi(`${baseProgramsUrl}/${params.id}`),
+      },
+      {
+        path: "/programs/:id/edit",
+        element: <ProgramEdit />,
+        loader: async ({ params }) => {
+          const categories = await fetchApi(`${baseCategoriesUrl}`);
+          const program = await fetchApi(`${baseProgramsUrl}/${params.id}`);
+          return { categories, program };
+        },
+        action: async ({ request, params }) => {
+          const formData = await request.formData();
+          const data = Object.fromEntries(formData.entries());
+
+          switch (request.method.toUpperCase()) {
+            case "PUT": {
+              await sendData(
+                `${baseProgramsUrl}/${params.id}`,
+                data,
+                request.method.toUpperCase()
+              );
+
+              return redirect(`/`);
+            }
+
+            case "DELETE": {
+              await sendData(
+                `${baseProgramsUrl}/${params.id}`,
+                data,
+                request.method.toUpperCase()
+              );
+              return redirect(`/`);
+            }
+            default:
+              throw new Response("", { status: 405 });
           }
         },
       },

@@ -7,7 +7,7 @@ function Programs() {
   return (
     <>
       <h1>Programmes</h1>
-      <ProgramForm categories={categories} />
+      <ProgramForm categories={categories} method="post" />
       <ProgramList programs={programs} />
     </>
   );

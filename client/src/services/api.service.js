@@ -9,15 +9,20 @@ export async function fetchApi(url) {
   }
 }
 
-export async function sendData(url, dataType, http) {
+export async function sendData(url, data, http) {
   try {
     const response = await fetch(import.meta.env.VITE_API_URL + url, {
       method: http,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(dataType),
+      body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      console.error('HTTP error', response.status, response.statusText);
+    }
+
     return response;
   } catch (error) {
     console.error("Error sending data :", error);

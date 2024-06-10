@@ -57,7 +57,6 @@ const read = async (req, res) => {
 const edit = async (req, res, next) => {
   // Extract the category data from the request body and params
   const category = { ...req.body, id: req.params.id };
-
   try {
     // Update the category in the database
     await tables.category.update(category);
